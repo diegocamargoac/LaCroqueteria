@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<style>
+    :root {
+        --blanco: #ffffff;
+        --gris_claro: #f4f7fc;
+        --primario: #429ebd;
+        --secundario: #053f5c;
+        --hover: #f7ad19;
+        --claro: #9fe7f6;
+    }
+
+    html {
+        font-size: 62.5%;
+        box-sizing: border-box;
+    }
+
+    *, *:before, *:after {
+        box-sizing: inherit;
+    }
+
+    body {
+        font-size: 1.6rem;
+        background: var(--gris_claro);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .login-container {
+        background-color: var(--blanco);
+        border-radius: 2rem;
+        box-shadow: 0 .4rem 1.2rem rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 40rem;
+        padding: 4rem;
+    }
+
+    .login-form {
+        text-align: center;
+    }
+
+    .title {
+        font-size: 2.4rem;
+        margin-bottom: 2rem;
+        color: var(--secundario);
+    }
+
+    .input-group {
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    label {
+        font-size: 1.4rem;
+        color: #555;
+    }
+
+    input {
+        width: 100%;
+        padding: 1.2rem;
+        margin-top: .8rem;
+        font-size: 1.6rem;
+        border-radius: .4rem;
+        border: 1px solid #ddd;
+        transition: border-color 0.3s;
+    }
+
+    input:focus {
+        border-color: var(--primario);
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 1.4rem;
+        background-color: var(--secundario);
+        border: none;
+        color: white;
+        font-size: 1.6rem;
+        border-radius: .4rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #357ab7;
+    }
+
+</style>
+<body>
+
+    <div class="login-container">
+        <div class="login-form">
+            <h2 class="title">¡Bienvenido!</h2>
+            <form id="loginForm" th:action="@{/login}" method="post">
+                <div class="input-group">
+                    <label for="name">Correo Electrónico</label>
+                    <input type="text" id="name" name="name" required placeholder="Introduce tu email">
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required placeholder="Introduce tu contraseña">
+                </div>
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+			<p th:if="${error}" style="color:red;">${error}</p>
+        </div>
+    </div>
+    
+</body>
+</html>
