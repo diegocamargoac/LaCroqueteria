@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,6 +113,47 @@
 			<p th:if="${error}" style="color:red;">${error}</p>
         </div>
     </div>
+    
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evitar el envío tradicional del formulario
+
+            const name = document.getElementById("name").value;
+            const password = document.getElementById("password").value;
+
+            // Crear el objeto que enviarás en el cuerpo de la solicitud
+            const userModel = {
+                name: name,
+                password: password
+            };
+
+            // Realizar la solicitud fetch
+            fetch('/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userModel)  // Convertir el objeto a JSON
+            })
+            .then(response => response.json())  // Convertir la respuesta a JSON
+            .then(data => {
+                // Verificar si la autenticación fue exitosa
+                if (data.success) {
+                    // Redirigir a la página de inicio si es exitoso
+                    window.location.replace(window.location.origin + "/navegador");  // Reemplaza la página actual con la nueva
+					console.log('Sí debe redirigir' + window.location.origin + "/navegador");
+                } else {
+                    // Mostrar mensaje de error en caso de autenticación fallida
+                    alert(data.message);  // Mostrar el mensaje de error de la respuesta
+                    console.log('Aquí es donde entra: ' + window.location.origin);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al intentar iniciar sesión.');
+            });
+        });
+    </script>
     
 </body>
 </html>

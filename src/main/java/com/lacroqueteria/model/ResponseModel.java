@@ -2,15 +2,15 @@ package com.lacroqueteria.model;
 
 public class ResponseModel<T> {
 
-	private boolean sucess;
+	private boolean success;
 	private String message;
 	private T data;
 	
-	public boolean isSucess() {
-		return sucess;
+	public boolean isSuccess() {
+		return success;
 	}
-	public void setSucess(boolean sucess) {
-		this.sucess = sucess;
+	public void setSuccess(boolean sucess) {
+		this.success = sucess;
 	}
 	public String getMessage() {
 		return message;
@@ -24,8 +24,8 @@ public class ResponseModel<T> {
 	public void setData(T data) {
 		this.data = data;
 	}
-	public ResponseModel(boolean sucess, String message, T data) {
-		this.sucess = sucess;
+	public ResponseModel(boolean success, String message, T data) {
+		this.success = success;
 		this.message = message;
 		this.data = data;
 	}

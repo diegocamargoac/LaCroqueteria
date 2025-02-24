@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lacroqueteria.model.ProductModel;
 import com.lacroqueteria.model.ResponseModel;
 import com.lacroqueteria.model.UserModel;
+import com.lacroqueteria.repository.ProductRepository;
 import com.lacroqueteria.repository.UserRepository;
+import com.lacroqueteria.service.ProductService;
 import com.lacroqueteria.service.UserService;
 
 @RestController
@@ -28,7 +31,13 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 	
-	// Login
+	@Autowired
+	private ProductService productService;
+	
+	@Autowired
+	private ProductRepository productRepository;
+	
+	// Login para cualquier usuario
 	@PostMapping("/login")
 	public ResponseEntity<ResponseModel<UserModel>> login(@RequestBody UserModel userModel) {
 		
@@ -89,4 +98,18 @@ public class UserController {
 
 	}
 	
+	// Mostrar todo el inventario
+	@GetMapping("/getAllProducts")
+	public ResponseEntity<ResponseModel<List<ProductModel>>> getAllProducts() {
+		List<ProductModel> products = productService.getAllProducts();
+		System.out.println(products.toString());
+		
+		if (products != null) {
+	        ResponseModel<List<ProductModel>> response = new ResponseModel<>(false, "No hay inventario", null);
+	        return ResponseEntity.ok(response);
+		} else {
+			ResponseModel<List<ProductModel>> response = new ResponseModel<>(true, "Todos los productos", products);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
 }

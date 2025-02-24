@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegador</title>
+</head>
+<style>
+    :root {
+        --blanco: #ffffff;
+        --gris_claro: #f4f7fc;
+        --primario: #429ebd;
+        --secundario: #053f5c;
+        --hover: #f7ad19;
+        --claro: #9fe7f6;
+    }
+
+    html {
+        font-size: 62.5%;
+        box-sizing: border-box;
+    }
+
+    *, *:before, *:after {
+        box-sizing: inherit;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+    body {
+        display: flex;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+    .sidebar {
+        width: 20rem;
+        background-color: var(--primario);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+    .logo {
+        width: 12rem;
+        height: 12rem;
+        background-color: white;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+    .nav-links {
+        list-style: none;
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
+    .nav-links li {
+        width: 20rem;
+    }
+    .nav-links a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 15px;
+        text-align: center;
+    }
+    .nav-links a:hover {
+        background-color: var(--secundario);
+        width: auto;
+    }
+    .nav-links a:focus {
+        background-color: var(--hover);
+        outline: none;
+    }
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+    }
+    .header {
+        background-color: white;
+        padding: 2rem;
+        font-size: 2.4rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .content {
+        flex: 1;
+        background-color: #D9D9D9;
+        padding: 20px;
+    }
+</style>
+<body>
+    <aside class="sidebar" th:fragment="sidebar">
+        <div class="logo"></div>
+        <ul class="nav-links">
+            <li><a th:href="@{/inicio}">Inicio</a></li>
+            <li><a th:href="@{/inicioAdmin}">Inicio Admin</a></li>
+            <li><a th:href="@{/resumenAdmin}">Resumen</a></li>
+            <li><a th:href="@{/inventarioAdmin}">Inventario</a></li>
+            <!--
+            <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a th:href="@{/admin}">Admin</a></li>
+            <li th:if="${#authorization.expression('hasRole(''CLIENTE'')')}"><a th:href="@{/cliente}">Cliente</a></li>
+            <li><a th:href="@{/configuracion}">Configuración</a></li>
+            -->
+        </ul>
+        
+    </aside>
+
+	<div class="main-content">
+        <!-- <header class="header" th:replace="header :: header"></header> -->
+
+		<main class="content" th:replace="inicio :: contenido"></main>
+		
+    </div>
+</body>
+</html>

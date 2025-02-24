@@ -17,12 +17,39 @@ public class UserThymleafController {
 	
 	@Autowired
 	private UserService userService;
-	/*
+	
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
-    */
+    
+    @GetMapping("/navegador")
+    public String navPage() {
+        return "navegador";
+    }
+    
+    // Plantillas de encargados
+    @GetMapping("/inicio")
+    public String inicio() {
+    	return "inicio";
+    }
+    
+    // Plantillas de administrador
+    @GetMapping("/inicioAdmin")
+    public String inicioAdmin() {
+    	return "inicioAdmin";
+    }
+    
+    @GetMapping("/resumenAdmin")
+    public String resumenAdmin() {
+    	return "resumenAdmin";
+    }
+    
+    @GetMapping("/inventarioAdmin")
+    public String inventarioAdmin() {
+    	return "inventarioAdmin";
+    }
+    
     /*
     @GetMapping("/error")
     public String errorPage() {
