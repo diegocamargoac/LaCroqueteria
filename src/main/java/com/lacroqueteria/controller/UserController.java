@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lacroqueteria.model.ProductModel;
 import com.lacroqueteria.model.ResponseModel;
 import com.lacroqueteria.model.UserModel;
-import com.lacroqueteria.repository.ProductRepository;
-import com.lacroqueteria.repository.UserRepository;
 import com.lacroqueteria.service.ProductService;
 import com.lacroqueteria.service.UserService;
 
@@ -29,13 +26,7 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
 	private ProductService productService;
-	
-	@Autowired
-	private ProductRepository productRepository;
 	
 	// Login para cualquier usuario
 	@PostMapping("/login")
@@ -102,14 +93,30 @@ public class UserController {
 	@GetMapping("/getAllProducts")
 	public ResponseEntity<ResponseModel<List<ProductModel>>> getAllProducts() {
 		List<ProductModel> products = productService.getAllProducts();
-		System.out.println(products.toString());
-		
 		if (products != null) {
-	        ResponseModel<List<ProductModel>> response = new ResponseModel<>(false, "No hay inventario", null);
+			ResponseModel<List<ProductModel>> response = new ResponseModel<>(true, "Todos los productos", products);
 	        return ResponseEntity.ok(response);
 		} else {
-			ResponseModel<List<ProductModel>> response = new ResponseModel<>(true, "Todos los productos", products);
+	        ResponseModel<List<ProductModel>> response = new ResponseModel<>(false, "No hay inventario", null);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+	
+	// Agregar nuevo usuario
+	@PostMapping("/addProduct")
+	public ResponseEntity<ResponseModel<ProductModel>> addProduct(@RequestBody ProductModel productModel) {
+	    if (productModel.getInversion() != null && productModel.getMarca() != null && 
+	        productModel.getPrecioCostal() != null && productModel.getPrecioKg() != null && 
+	        productModel.getTipo() != null) {
+	        
+	        ProductModel createdProduct = productService.addProduct(productModel);
+	        
+	        ResponseModel<ProductModel> response = new ResponseModel<>(true, "Producto añadido correctamente", createdProduct);
+	        return ResponseEntity.ok(response);
+	    } else {
+	        ResponseModel<ProductModel> response = new ResponseModel<>(false, "Error al añadir nuevo producto: campos incompletos", null);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	    }
+	}
+	
 }

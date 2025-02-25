@@ -80,12 +80,6 @@
         flex-direction: column;
         padding: 2rem;
     }
-    .header {
-        background-color: white;
-        padding: 2rem;
-        font-size: 2.4rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
     .content {
         flex: 1;
         background-color: #D9D9D9;
@@ -99,7 +93,7 @@
             <li><a th:href="@{/inicio}">Inicio</a></li>
             <li><a th:href="@{/inicioAdmin}">Inicio Admin</a></li>
             <li><a th:href="@{/resumenAdmin}">Resumen</a></li>
-            <li><a th:href="@{/inventarioAdmin}">Inventario</a></li>
+            <li><a th:href="@{/inventarioAdmin}">Inventario Admin</a></li>
             <!--
             <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a th:href="@{/admin}">Admin</a></li>
             <li th:if="${#authorization.expression('hasRole(''CLIENTE'')')}"><a th:href="@{/cliente}">Cliente</a></li>
@@ -110,7 +104,7 @@
     </aside>
 
 	<div class="main-content">
-        <!-- <header class="header" th:replace="header :: header"></header> -->
+        <header class="header" th:replace="header :: header"></header>
 
 		<main class="content" th:replace="inicio :: contenido"></main>
 		

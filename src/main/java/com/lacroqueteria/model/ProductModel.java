@@ -17,46 +17,68 @@ public class ProductModel {
 	private Long id;
 	private String marca;
 	private String tipo;
-	private Long gramos;
-	private BigDecimal pesos;
+	private BigDecimal inversion;
+	private BigDecimal precioKg;
+	private BigDecimal precioCostal;
 	
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getMarca() {
 		return marca;
 	}
+
 	public void setMarca(String marca) {
 		this.marca = marca;
 	}
+
 	public String getTipo() {
 		return tipo;
 	}
+
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-	public Long getGramos() {
-		return gramos;
+
+	public BigDecimal getInversion() {
+		return inversion;
 	}
-	public void setGramos(Long gramos) {
-		this.gramos = gramos;
+
+	public void setInversion(BigDecimal inversion) {
+		this.inversion = inversion;
 	}
-	public BigDecimal getPesos() {
-		return pesos;
+
+	public BigDecimal getPrecioKg() {
+		return precioKg;
 	}
-	public void setPesos(BigDecimal pesos) {
-		this.pesos = pesos;
+
+	public void setPrecioKg(BigDecimal precioKg) {
+		this.precioKg = precioKg;
 	}
-	public ProductModel(Long id, String marca, String tipo, Long gramos, BigDecimal pesos) {
+
+	public BigDecimal getPrecioCostal() {
+		return precioCostal;
+	}
+
+	public void setPrecioCostal(BigDecimal precioCostal) {
+		this.precioCostal = precioCostal;
+	}
+	
+	public ProductModel(Long id, String marca, String tipo, BigDecimal inversion, BigDecimal precioKg,
+			BigDecimal precioCostal) {
 		this.id = id;
 		this.marca = marca;
 		this.tipo = tipo;
-		this.gramos = gramos;
-		this.pesos = pesos;
+		this.inversion = inversion;
+		this.precioKg = precioKg;
+		this.precioCostal = precioCostal;
 	}
+
 	public ProductModel() {
 	}	
 	
