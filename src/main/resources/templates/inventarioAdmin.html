@@ -13,7 +13,6 @@
 	<!-- DataTables JS -->
 	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 	<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
 </head>
 <style>
     :root {
@@ -133,6 +132,60 @@
 	.dataTables_filter label {
 	    font-size: 1.2rem;
 	}
+	.button-popup {
+		font-size: 1.3rem;
+		padding: 1rem;
+		border: none;
+		background-color: var(--hover);
+		color: white;
+		border-radius: 1.5rem;
+		font-weight: bold;
+	}
+	.add-product {
+		display: none;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: #fff;
+		padding: 3rem;
+		border: 1px solid #ccc;
+		z-index: 1000;
+		width: 35rem;
+	}
+	.form-label {
+		font-size: 1.2rem;
+	}
+	.form-control {
+		border-radius: 1.5rem;
+	}
+	.save-button {
+		font-size: 1.3rem;
+		padding: 1rem;
+		border: none;
+		background-color: var(--secundario);
+		color: white;
+		border-radius: 1.5rem;
+		font-weight: bold;
+	}
+	.cancel-button {
+		font-size: 1.3rem;
+		padding: 1rem;
+		border: none;
+		background-color: red;
+		color: white;
+		border-radius: 1.5rem;
+		font-weight: bold;
+	}
+	.delete-button {
+		font-size: 1rem;
+		padding: .8rem;
+		border: none;
+		background-color: var(--secundario);
+		color: white;
+		border-radius: 1.5rem;
+		font-weight: bold;
+	}
 </style>
 <body>
 
@@ -150,19 +203,109 @@
 		                <th>Precio proveedor</th>
 		                <th>Precio bulto</th>
 		                <th>Precio kg</th>
+		                <th>Eliminar</th>
 		            </tr>
 		        </thead>
 		        <tbody>
 		            <!-- Los datos se llenarán con JavaScript -->
 		        </tbody>
 	   		</table>
-		    
+	   		<br>
+		    <div>
+		        <button class="button-popup" onclick="openPopup()">Añadir Producto</button>
+		    </div>
 		</main>
 	</div>
 	
+    <!-- Popup Para agregar nuevo producto -->
+    <div id="productPopup" class="add-product">
+        <h3 style="font-weight: bold">Añadir Producto</h3>
+        <br>
+        <form th:object="${productModel}" onsubmit="submitProduct()">
+             <div>
+                <label for="marca" class="form-label">Marca</label>
+                <input type="text" id="marca" name="marca" class="form-control" required>
+            </div>
+            <div>
+                <label for="tipo" class="form-label">Tipo</label>
+                <input type="text" id="tipo" name="tipo" class="form-control" required>
+            </div>
+            <div>
+                <label for="inversion" class="form-label">Precio proveedor</label>
+                <input type="number" step="0.01" id="inversion" name="inversion" class="form-control" required>
+            </div>
+            <div>
+                <label for="precioCostal" class="form-label">Precio Costal</label>
+                <input type="number" step="0.01" id="precioCostal" name="precioCostal" class="form-control" required>
+            </div>
+            <div>
+                <label for="precioKg" class="form-label">Precio kg</label>
+                <input type="number" step="0.01" id="precioKg" name="precioKg" class="form-control" required>
+            </div>
+            <br>
+            <div style="display: flex; justify-content: center; gap: 2rem">
+	            <button type="submit" class="save-button">Guardar Producto</button>
+	            <button type="button" class="cancel-button" onclick="closePopup()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Fondo oscuro para bloquear contenido -->
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
+    
+    
+    <script>
+        function openPopup() {
+            document.getElementById('productPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('productPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePopup();
+            }
+        });
+
+        document.getElementById('overlay').addEventListener('click', closePopup);
+    </script>
+	
+	<script>
+	    function submitProduct() {
+	        const product = {
+	            tipo: document.getElementById('tipo').value,
+	            marca: document.getElementById('marca').value,
+	            inversion: parseFloat(document.getElementById('inversion').value),
+	            precioCostal: parseFloat(document.getElementById('precioCostal').value),
+	            precioKg: parseFloat(document.getElementById('precioKg').value)
+	        };
+	
+	        fetch('/user/addProduct', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
+	            },
+	            body: JSON.stringify(product)
+	        })
+	        .then(response => {
+	            if (response.ok) {
+	                alert('Producto añadido correctamente');
+	                closePopup();
+	            } else {
+	                alert('Error al añadir producto');
+	            }
+	        })
+	        .catch(error => console.error('Error:', error));
+	    }
+	</script>
+	
 	<script>
 	document.addEventListener('DOMContentLoaded', () => {
-	    fetch('/admin/getAllProducts')
+	    fetch('/user/getAllProducts')
 	        .then(response => {
 	            if (!response.ok) {
 	                throw new Error(`Error HTTP: ${response.status}`);
@@ -172,7 +315,7 @@
 	        .then(data => {
 	            if (data.success && data.data) {
 	                populateTable(data.data);
-	                $('#productTable').DataTable(); // Inicializa DataTables aquí
+	                $('#productTable').DataTable();
 	            } else {
 	                alert("No hay inventario disponible.");
 	            }
@@ -194,11 +337,36 @@
 	            <td>${product.inversion}</td>
 	            <td>${product.precioCostal}</td>
 	            <td>${product.precioKg}</td>
-	            
+	            <td>
+	                <button class="delete-button" onclick="deleteProduct(${product.id})">
+	                    Eliminar
+	                </button>
+	            </td>
 	        `;
 	        tableBody.appendChild(row);
 	    });
 	}
+
+	function deleteProduct(id) {
+	    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+	        fetch(`/user/deleteProduct/${id}`, {
+	            method: 'DELETE'
+	        })
+	        .then(response => response.json())
+	        .then(data => {
+	            if (data.success) {
+	                alert('Producto eliminado correctamente');
+	                window.location.reload();
+	                fetchProducts();
+	            } else {
+	                alert('Error al eliminar el producto: ' + data.message);
+	            }
+	        })
+	        .catch(error => console.error('Error al eliminar producto:', error));
+	    }
+	}
+
+	document.addEventListener('DOMContentLoaded', fetchProducts);
 	</script>
 	
 </body>
