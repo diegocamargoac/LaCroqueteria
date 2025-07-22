@@ -137,10 +137,8 @@
             .then(data => {
                 if (data.success) {
                     window.location.replace(window.location.origin + "/navegador");
-					console.log('Sí debe redirigir' + window.location.origin + "/navegador");
                 } else {
                     alert(data.message);
-                    console.log('Aquí es donde entra: ' + window.location.origin);
                 }
             })
             .catch(error => {

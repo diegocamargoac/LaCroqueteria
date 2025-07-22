@@ -1,6 +1,9 @@
 package com.lacroqueteria.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lacroqueteria.model.EarningsModel;
 import com.lacroqueteria.model.ProductModel;
 import com.lacroqueteria.model.ResponseModel;
+import com.lacroqueteria.model.SalesModel;
 import com.lacroqueteria.model.UserModel;
+import com.lacroqueteria.service.EarningsService;
 import com.lacroqueteria.service.ProductService;
+import com.lacroqueteria.service.SalesService;
 import com.lacroqueteria.service.UserService;
 
 @RestController
@@ -30,7 +37,13 @@ public class UserController {
 	@Autowired
 	private ProductService productService;
 	
-	// Login para cualquier usuario
+	@Autowired
+	private SalesService salesService;
+	
+	@Autowired
+	private EarningsService earningsService;
+	
+	// Login for any user
 	@PostMapping("/login")
 	public ResponseEntity<ResponseModel<UserModel>> login(@RequestBody UserModel userModel) {
 		
@@ -62,7 +75,7 @@ public class UserController {
 	}
 
 	
-	// Mostrar todos los usuarios
+	// Show all users
 	@GetMapping("/getAllUsers")
 	public ResponseEntity<ResponseModel<List<UserModel>>> getAllUsers() {
 	    List<UserModel> users = userService.findAllUsers();
@@ -76,7 +89,7 @@ public class UserController {
 	    return ResponseEntity.ok(response);
 	}
 	
-	// Agregar nuevo usuario
+	// Add new user
 	@PostMapping("/addUser")
 	public ResponseEntity<ResponseModel<UserModel>> addUser(@RequestBody UserModel userModel) {
 		UserModel createdUser = userService.addUser(userModel);
@@ -91,7 +104,7 @@ public class UserController {
 
 	}
 	
-	// Mostrar todo el inventario
+	// Show all products
 	@GetMapping("/getAllProducts")
 	public ResponseEntity<ResponseModel<List<ProductModel>>> getAllProducts() {
 		List<ProductModel> products = productService.getAllProducts();
@@ -104,12 +117,10 @@ public class UserController {
 		}
 	}
 	
-	// Agregar nuevo producto
+	// Add new product
 	@PostMapping("/addProduct")
 	public ResponseEntity<ResponseModel<ProductModel>> addProduct(@RequestBody ProductModel productModel) {
-	    if (productModel.getInversion() != null && productModel.getMarca() != null && 
-	        productModel.getPrecioCostal() != null && productModel.getPrecioKg() != null && 
-	        productModel.getTipo() != null) {
+	    if (productModel.getBrand() != null && productModel.getPriceCostal() != null && productModel.getPriceKg() != null && productModel.getType() != null) {
 	        
 	        ProductModel createdProduct = productService.addProduct(productModel);
 	        
@@ -121,6 +132,7 @@ public class UserController {
 	    }
 	}
 	
+	// Delete a product by id
 	@DeleteMapping("/deleteProduct/{id}")
 	public ResponseEntity<ResponseModel<String>> deleteProduct(@PathVariable Long id) {
 	    if (id == null) {
@@ -128,7 +140,7 @@ public class UserController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	    }
 
-	    boolean deleted = productService.deleteProductById(id);
+	    Boolean deleted = productService.deleteProductById(id);
 
 	    if (deleted) {
 	        ResponseModel<String> response = new ResponseModel<>(true, "Producto eliminado correctamente", null);
@@ -139,4 +151,78 @@ public class UserController {
 	    }
 	}
 	
+	// New sale
+	@PostMapping("/addSale")
+	public ResponseEntity<ResponseModel<List<SalesModel>>> addSales(@RequestBody List<SalesModel> salesModel) {
+		System.out.println(salesModel.get(0).getKg());
+		System.out.println(salesModel.get(0).getPrice());
+	    if (salesModel == null || salesModel.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                .body(new ResponseModel<>(false, "Debe proporcionar al menos una venta válida", null));
+	    }
+
+	    List<SalesModel> registredSales = new ArrayList<>();
+
+	    for (SalesModel sale : salesModel) {
+	        if (sale.getProduct() == null || sale.getProduct().getId() == null) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                    .body(new ResponseModel<>(false, "Debe proporcionar un producto válido en todas las ventas", null));
+	        }
+
+	        SalesModel registredSale = null;
+
+	        if (sale.getKg() != null && sale.getPrice() == null) {
+	        	registredSale = salesService.saleForKg(sale);
+	        } else if (sale.getPrice() != null && sale.getKg() == null) {
+	        	registredSale = salesService.saleForPrice(sale);
+	        } else {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                    .body(new ResponseModel<>(false, "Cada venta debe proporcionar solo KG o solo Precio", null));
+	        }
+
+	        if (registredSale != null) {
+	        	registredSales.add(registredSale);
+	        }
+	    }
+
+	    if (!registredSales.isEmpty()) {
+	        return ResponseEntity.ok(new ResponseModel<>(true, "Ventas registradas correctamente", registredSales));
+	    } else {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                .body(new ResponseModel<>(false, "Error al registrar las ventas", null));
+	    }
+	}
+	
+	// Show all sales
+	@GetMapping("/getAllSales")
+	public ResponseEntity<ResponseModel<List<SalesModel>>> getAllSales() {
+	    List<SalesModel> sales = salesService.getAllVentas();
+
+	    LocalDate today = LocalDate.now();
+	    List<SalesModel> salesToday = sales.stream()
+	        .filter(sale -> sale.getDate().equals(today))
+	        .collect(Collectors.toList());
+
+	    if (salesToday != null && !salesToday.isEmpty()) {
+	        ResponseModel<List<SalesModel>> response = new ResponseModel<>(true, "Ventas de hoy", salesToday);
+	        return ResponseEntity.ok(response);
+	    } else {
+	        ResponseModel<List<SalesModel>> response = new ResponseModel<>(false, "No hay ventas hoy", null);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	    }
+	}
+	
+	// Show all earnings separated for dates
+	@GetMapping("/getAllEarnings")
+	public ResponseEntity<ResponseModel<List<EarningsModel>>> getAllEarnings() {
+		List<EarningsModel> earnings = earningsService.getAllEarnings();
+		if (earnings != null) {
+			ResponseModel<List<EarningsModel>> response = new ResponseModel<>(true, "Todas las ganancias", earnings);
+	        return ResponseEntity.ok(response);
+		} else {
+	        ResponseModel<List<EarningsModel>> response = new ResponseModel<>(false, "No hay ganancias", null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
 }

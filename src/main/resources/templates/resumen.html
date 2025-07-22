@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resumen Admin</title>
+    <title>Resumen</title>
 	<!-- Bootstrap CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!-- DataTables CSS -->
@@ -202,129 +202,22 @@
 		                <th>Marca</th>
 		                <th>Raza</th>
 		                <th>Kg</th>
-		                <th>Precio Kg</th>
-		                <th>Precio Bulto</th>
-		                <th>% Kg</th>
-		                <th>$ Kg</th>
-		                <th>% Bulto</th>
-		                <th>$ Bulto</th>
-		                <th>Precio Venta kg</th>
-		                <th>Precio Venta Bulto</th>
+		                <th>Precio</th>
 		            </tr>
 		        </thead>
 		        <tbody>
 		            <!-- Los datos se llenarán con JavaScript -->
 		        </tbody>
 	   		</table>
-	   		<br>
-		    <div>
-		        <button class="button-popup" onclick="openPopup()">Añadir Producto</button>
-		    </div>
 		</main>
 	</div>
-	
-    <!-- Popup Para agregar nuevo producto -->
-    <div id="productPopup" class="add-product">
-        <h3 style="font-weight: bold">Añadir Producto</h3>
-        <br>
-        <form th:object="${productModel}" onsubmit="submitProduct(event)">
-             <div>
-                <label for="marca" class="form-label">Marca</label>
-                <input type="text" id="marca" name="marca" class="form-control" required>
-            </div>
-            <div>
-                <label for="tipo" class="form-label">Raza</label>
-                <input type="text" id="tipo" name="tipo" class="form-control" required>
-            </div>
-            <div>
-                <label for="kg" class="form-label">Kg</label>
-                <input type="text" id="kg" name="kg" class="form-control" required>
-            </div>
-            <div>
-                <label for="precioKg" class="form-label">Precio Kg</label>
-                <input type="text" id="precioKg" name="precioKg" class="form-control" required>
-            </div>
-            <div>
-                <label for="precioCostal" class="form-label">Precio Bulto</label>
-                <input type="number" step="0.01" id="precioCostal" name="precioCostal" class="form-control" required>
-            </div>
-            <div>
-                <label for="porcentajeKg" class="form-label">% kg</label>
-                <input type="number" step="0.01" id="porcentajeKg" name="porcentajeKg" class="form-control" required>
-            </div>
-            <div>
-                <label for="porcentajeCostal" class="form-label">% Bulto</label>
-                <input type="number" step="0.01" id="porcentajeCostal" name="porcentajeCostal" class="form-control" required>
-            </div>
-            <br>
-            <div style="display: flex; justify-content: center; gap: 2rem">
-	            <button type="submit" class="save-button">Guardar Producto</button>
-	            <button type="button" class="cancel-button" onclick="closePopup()">Cancelar</button>
-            </div>
-        </form>
-    </div>
     
     <!-- Fondo oscuro para bloquear contenido -->
     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
-    
-    
-    <script>
-        function openPopup() {
-            document.getElementById('productPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function closePopup() {
-            document.getElementById('productPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closePopup();
-            }
-        });
-
-        document.getElementById('overlay').addEventListener('click', closePopup);
-    </script>
-	
-	<script>
-	    function submitProduct(event) {
-	        event.preventDefault();
-	
-	        const product = {
-	            marca: document.getElementById('marca').value,
-	            tipo: document.getElementById('tipo').value,
-	            kg: parseFloat(document.getElementById('kg').value),
-	            precioKg: parseFloat(document.getElementById('precioKg').value),
-	            precioCostal: parseFloat(document.getElementById('precioCostal').value),
-	            porcentajeKg: parseFloat(document.getElementById('porcentajeKg').value),
-	            porcentajeCostal: parseFloat(document.getElementById('porcentajeCostal').value),
-	        };
-	
-	        fetch('/user/addProduct', {
-	            method: 'POST',
-	            headers: {
-	                'Content-Type': 'application/json'
-	            },
-	            body: JSON.stringify(product)
-	        })
-	        .then(response => {
-	            if (response.ok) {
-	                alert('Producto añadido correctamente');
-	                closePopup();
-	                window.location.reload();
-	            } else {
-	                alert('Error al añadir producto');
-	            }
-	        })
-	        .catch(error => console.error('Error:', error));
-	    }
-	</script>
-	
+    	
 	<script>
 	document.addEventListener('DOMContentLoaded', () => {
-	    fetch('/user/getAllProducts')
+	    fetch('/user/getAllSales')
 	        .then(response => {
 	            if (!response.ok) {
 	                throw new Error(`Error HTTP: ${response.status}`);
@@ -351,46 +244,14 @@
 	    products.forEach(product => {
 	        const row = document.createElement('tr');
 	        row.innerHTML = `
-	            <td>${product.marca}</td>
-	            <td>${product.tipo}</td>
+	            <td>${product.product.brand}</td>
+	            <td>${product.product.type}</td>
 	            <td>${product.kg}</td>
-	            <td>${product.precioKg}</td>
-	            <td>${product.precioCostal}</td>
-	            <td>${product.porcentajeKg}</td>
-	            <td>${product.precioPorcentajeKg}</td>
-	            <td>${product.porcentajeCostal}</td>
-	            <td>${product.precioPorcentajeCostal}</td>
-	            <td>${product.precioVentaKg}</td>
-	            <td>${product.precioVentaCostal}</td>
-	                <button class="delete-button" onclick="deleteProduct(${product.id})">
-	                    Eliminar
-	                </button>
-	            </td>
+	            <td>${product.price}</td>
 	        `;
 	        tableBody.appendChild(row);
 	    });
 	}
-
-	function deleteProduct(id) {
-	    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-	        fetch(`/user/deleteProduct/${id}`, {
-	            method: 'DELETE'
-	        })
-	        .then(response => response.json())
-	        .then(data => {
-	            if (data.success) {
-	                alert('Producto eliminado correctamente');
-	                window.location.reload();
-	                fetchProducts();
-	            } else {
-	                alert('Error al eliminar el producto: ' + data.message);
-	            }
-	        })
-	        .catch(error => console.error('Error al eliminar producto:', error));
-	    }
-	}
-
-	document.addEventListener('DOMContentLoaded', fetchProducts);
 	</script>
 	
 </body>

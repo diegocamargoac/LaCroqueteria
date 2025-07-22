@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario</title>
+    <title>Inventario Admin</title>
 	<!-- Bootstrap CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!-- DataTables CSS -->
@@ -112,23 +112,21 @@
 	#productTable th, #productTable td {
 	    font-size: 1.25rem;
 	}
-	/* Aumentar el tamaño de las letras para el texto de "Showing X to Y of Z entries" */
+	#salesTable th, #salesTable td {
+	    font-size: 1.25rem;
+	}
 	.dataTables_info {
 	    font-size: 1.2rem;
 	}
-	/* Aumentar tamaño de letras para "Show X entries" */
 	.dataTables_length {
 	    font-size: 1.2rem;
 	}
-	/* Aumentar el tamaño del recuadro para seleccionar cuántas entradas se quieren mostrar */
 	.dataTables_length select {
 	    font-size: 1.2rem;
 	}
-	/* Aumentar tamaño de letras para el campo de búsqueda */
 	.dataTables_filter input {
 	    font-size: 1.2rem;
 	}
-	/* Aumentar el tamaño de la palabra "Search" */
 	.dataTables_filter label {
 	    font-size: 1.2rem;
 	}
@@ -178,13 +176,14 @@
 		font-weight: bold;
 	}
 	.delete-button {
-		font-size: 1rem;
+		font-size: 1.2rem;
 		padding: .8rem;
 		border: none;
-		background-color: var(--secundario);
-		color: white;
+		background-color: var(--secundario) !important;
+		color: white !important;
 		border-radius: 1.5rem;
 		font-weight: bold;
+		width: 8rem;
 	}
 </style>
 <body>
@@ -192,7 +191,7 @@
     <aside class="sidebar" th:replace="navegador :: sidebar"></aside>
 
 	<div class="main-content">
-		<header th:fragment="header" class="header">Inventario</header>
+		<header th:fragment="header" class="header">Inventario Admin</header>
 		
 		<main class="main" th:fragment="contenido">		    
 	        <table id="productTable" border="1" class="table table-striped table-hover table-bordered">
@@ -200,10 +199,15 @@
 		            <tr>
 		                <th>Marca</th>
 		                <th>Raza</th>
-		                <th>Precio proveedor</th>
-		                <th>Precio bulto</th>
-		                <th>Precio kg</th>
-		                <th>Eliminar</th>
+		                <th>Kg</th>
+		                <th>Precio Kg</th>
+		                <th>Precio Bulto</th>
+		                <th>% Kg</th>
+		                <th>$ Kg</th>
+		                <th>% Bulto</th>
+		                <th>$ Bulto</th>
+		                <th>Precio Venta kg</th>
+		                <th>Precio Venta Bulto</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -214,6 +218,20 @@
 		    <div>
 		        <button class="button-popup" onclick="openPopup()">Añadir Producto</button>
 		    </div>
+		    <br>
+  	        <table id="salesTable" border="1" class="table table-striped table-hover table-bordered">
+		        <thead>
+		            <tr>
+		                <th>Fecha</th>
+		                <th>Ventas</th>
+		                <th>Ganancias</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <!-- Los datos se llenarán con JavaScript -->
+		        </tbody>
+	   		</table>
+		    
 		</main>
 	</div>
 	
@@ -221,26 +239,34 @@
     <div id="productPopup" class="add-product">
         <h3 style="font-weight: bold">Añadir Producto</h3>
         <br>
-        <form th:object="${productModel}" onsubmit="submitProduct()">
+        <form th:object="${productModel}" onsubmit="submitProduct(event)">
              <div>
-                <label for="marca" class="form-label">Marca</label>
-                <input type="text" id="marca" name="marca" class="form-control" required>
+                <label for="brand" class="form-label">Marca</label>
+                <input type="text" id="brand" name="brand" class="form-control" required>
             </div>
             <div>
-                <label for="tipo" class="form-label">Tipo</label>
-                <input type="text" id="tipo" name="tipo" class="form-control" required>
+                <label for="type" class="form-label">Raza</label>
+                <input type="text" id="type" name="type" class="form-control" required>
             </div>
             <div>
-                <label for="inversion" class="form-label">Precio proveedor</label>
-                <input type="number" step="0.01" id="inversion" name="inversion" class="form-control" required>
+                <label for="kg" class="form-label">Kg</label>
+                <input type="text" id="kg" name="kg" class="form-control" required>
             </div>
             <div>
-                <label for="precioCostal" class="form-label">Precio Costal</label>
-                <input type="number" step="0.01" id="precioCostal" name="precioCostal" class="form-control" required>
+                <label for="priceKg" class="form-label">Precio Kg</label>
+                <input type="text" id="priceKg" name="priceKg" class="form-control" required>
             </div>
             <div>
-                <label for="precioKg" class="form-label">Precio kg</label>
-                <input type="number" step="0.01" id="precioKg" name="precioKg" class="form-control" required>
+                <label for="priceCostal" class="form-label">Precio Bulto</label>
+                <input type="number" step="0.01" id="priceCostal" name="priceCostal" class="form-control" required>
+            </div>
+            <div>
+                <label for="percentageKg" class="form-label">% kg</label>
+                <input type="number" step="0.01" id="percentageKg" name="percentageKg" class="form-control" required>
+            </div>
+            <div>
+                <label for="percentageCostal" class="form-label">% Bulto</label>
+                <input type="number" step="0.01" id="percentageCostal" name="percentageCostal" class="form-control" required>
             </div>
             <br>
             <div style="display: flex; justify-content: center; gap: 2rem">
@@ -275,13 +301,17 @@
     </script>
 	
 	<script>
-	    function submitProduct() {
+	    function submitProduct(event) {
+	        event.preventDefault();
+	
 	        const product = {
-	            tipo: document.getElementById('tipo').value,
-	            marca: document.getElementById('marca').value,
-	            inversion: parseFloat(document.getElementById('inversion').value),
-	            precioCostal: parseFloat(document.getElementById('precioCostal').value),
-	            precioKg: parseFloat(document.getElementById('precioKg').value)
+	            brand: document.getElementById('brand').value,
+	            type: document.getElementById('type').value,
+	            kg: parseFloat(document.getElementById('kg').value),
+	            priceKg: parseFloat(document.getElementById('priceKg').value),
+	            priceCostal: parseFloat(document.getElementById('priceCostal').value),
+	            percentageKg: parseFloat(document.getElementById('percentageKg').value),
+	            percentageCostal: parseFloat(document.getElementById('percentageCostal').value),
 	        };
 	
 	        fetch('/user/addProduct', {
@@ -295,6 +325,7 @@
 	            if (response.ok) {
 	                alert('Producto añadido correctamente');
 	                closePopup();
+	                window.location.reload();
 	            } else {
 	                alert('Error al añadir producto');
 	            }
@@ -332,12 +363,17 @@
 	    products.forEach(product => {
 	        const row = document.createElement('tr');
 	        row.innerHTML = `
-	            <td>${product.marca}</td>
-	            <td>${product.tipo}</td>
-	            <td>${product.inversion}</td>
-	            <td>${product.precioCostal}</td>
-	            <td>${product.precioKg}</td>
-	            <td>
+	            <td>${product.brand}</td>
+	            <td>${product.type}</td>
+	            <td>${product.kg}</td>
+	            <td>${product.priceKg}</td>
+	            <td>${product.priceCostal}</td>
+	            <td>${product.percentageKg}</td>
+	            <td>${product.percentagePriceKg}</td>
+	            <td>${product.percentageCostal}</td>
+	            <td>${product.percentagePriceCostal}</td>
+	            <td>${product.salePriceKg}</td>
+	            <td>${product.salePriceCostal}</td>
 	                <button class="delete-button" onclick="deleteProduct(${product.id})">
 	                    Eliminar
 	                </button>
@@ -367,6 +403,44 @@
 	}
 
 	document.addEventListener('DOMContentLoaded', fetchProducts);
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+		    fetch('/user/getAllEarnings')
+		        .then(response => {
+		            if (!response.ok) {
+		                throw new Error(`Error HTTP: ${response.status}`);
+		            }
+		            return response.json();
+		        })
+		        .then(data => {
+		            if (data.success && data.data) {
+		                populateTableSales(data.data);
+		                $('#salesTable').DataTable();
+		            } else {
+		                alert("No hay ganancias disponibles.");
+		            }
+		        })
+		        .catch(error => {
+		            console.error('Error al obtener ganancias:', error);
+		        });
+		});
+		
+		function populateTableSales(products) {
+		    const tableBody = document.querySelector('#salesTable tbody');
+		    tableBody.innerHTML = '';
+
+		    products.forEach(product => {
+		        const row = document.createElement('tr');
+		        row.innerHTML = `
+		            <td>${product.date}</td>
+		            <td>${product.totalSales}</td>
+		            <td>${product.totalEarnings}</td>
+		        `;
+		        tableBody.appendChild(row);
+		    });
+		}
 	</script>
 	
 </body>

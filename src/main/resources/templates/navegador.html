@@ -90,10 +90,14 @@
     <aside class="sidebar" th:fragment="sidebar">
         <div class="logo"></div>
         <ul class="nav-links">
+        	<!-- Navegaciones que se implementarán en el futuro -->
+        	<!--
             <li><a th:href="@{/inicio}">Inicio</a></li>
             <li><a th:href="@{/inicioAdmin}">Inicio Admin</a></li>
-            <li><a th:href="@{/resumenAdmin}">Resumen</a></li>
-            <li><a th:href="@{/inventarioAdmin}">Inventario Admin</a></li>
+            -->
+            <li><a th:href="@{/resumen}">Ventas</a></li>
+            <li><a th:href="@{/inventario}">Inventario Tienda</a></li> <!-- Inventario para encargados de tienda -->
+            <li><a th:href="@{/inventarioAdmin}">Inventario Admin</a></li> <!-- Inventario para dueño -->
             <!--
             <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a th:href="@{/admin}">Admin</a></li>
             <li th:if="${#authorization.expression('hasRole(''CLIENTE'')')}"><a th:href="@{/cliente}">Cliente</a></li>

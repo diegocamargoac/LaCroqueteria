@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+// Para croquetas
 @Entity
 @Table(name = "product")
 public class ProductModel {
@@ -15,11 +16,17 @@ public class ProductModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String marca;
-	private String tipo;
-	private BigDecimal inversion;
-	private BigDecimal precioKg;
-	private BigDecimal precioCostal;
+	private String brand; // marca
+	private String type; // tipo
+	private BigDecimal kg;
+	private BigDecimal priceKg; // precioKg
+	private BigDecimal priceCostal; // precioCostal
+	private BigDecimal percentageKg; // porcentajeKg
+	private BigDecimal percentagePriceKg; // precioPorcentajeKg
+	private BigDecimal salePriceKg; // precioVentaKg
+	private BigDecimal percentageCostal; // porcentajeCostal
+	private BigDecimal percentagePriceCostal; // precioPorcentajeCostal
+	private BigDecimal salePriceCostal; // precioVentaCostal
 	
 	public Long getId() {
 		return id;
@@ -29,57 +36,113 @@ public class ProductModel {
 		this.id = id;
 	}
 
-	public String getMarca() {
-		return marca;
+	public String getBrand() {
+		return brand;
 	}
 
-	public void setMarca(String marca) {
-		this.marca = marca;
+	public void setBrand(String brand) {
+		this.brand = brand;
 	}
 
-	public String getTipo() {
-		return tipo;
+	public String getType() {
+		return type;
 	}
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public BigDecimal getInversion() {
-		return inversion;
+	public BigDecimal getKg() {
+		return kg;
 	}
 
-	public void setInversion(BigDecimal inversion) {
-		this.inversion = inversion;
+	public void setKg(BigDecimal kg) {
+		this.kg = kg;
 	}
 
-	public BigDecimal getPrecioKg() {
-		return precioKg;
+	public BigDecimal getPriceKg() {
+		return priceKg;
 	}
 
-	public void setPrecioKg(BigDecimal precioKg) {
-		this.precioKg = precioKg;
+	public void setPriceKg(BigDecimal priceKg) {
+		this.priceKg = priceKg;
 	}
 
-	public BigDecimal getPrecioCostal() {
-		return precioCostal;
+	public BigDecimal getPriceCostal() {
+		return priceCostal;
 	}
 
-	public void setPrecioCostal(BigDecimal precioCostal) {
-		this.precioCostal = precioCostal;
+	public void setPriceCostal(BigDecimal priceCostal) {
+		this.priceCostal = priceCostal;
+	}
+
+	public BigDecimal getPercentageKg() {
+		return percentageKg;
+	}
+
+	public void setPercentageKg(BigDecimal percentageKg) {
+		this.percentageKg = percentageKg;
+	}
+
+	public BigDecimal getPercentagePriceKg() {
+		return percentagePriceKg;
+	}
+
+	public void setPercentagePriceKg(BigDecimal percentagePriceKg) {
+		this.percentagePriceKg = percentagePriceKg;
+	}
+
+	public BigDecimal getSalePriceKg() {
+		return salePriceKg;
+	}
+
+	public void setSalePriceKg(BigDecimal salePriceKg) {
+		this.salePriceKg = salePriceKg;
+	}
+
+	public BigDecimal getPercentageCostal() {
+		return percentageCostal;
+	}
+
+	public void setPercentageCostal(BigDecimal percentageCostal) {
+		this.percentageCostal = percentageCostal;
+	}
+
+	public BigDecimal getPercentagePriceCostal() {
+		return percentagePriceCostal;
+	}
+
+	public void setPercentagePriceCostal(BigDecimal percentagePriceCostal) {
+		this.percentagePriceCostal = percentagePriceCostal;
+	}
+
+	public BigDecimal getSalePriceCostal() {
+		return salePriceCostal;
+	}
+
+	public void setSalePriceCostal(BigDecimal salePriceCostal) {
+		this.salePriceCostal = salePriceCostal;
+	}
+
+	public ProductModel(Long id, String brand, String type, BigDecimal kg, BigDecimal priceKg, BigDecimal priceCostal,
+			BigDecimal percentageKg, BigDecimal percentagePriceKg, BigDecimal salePriceKg, BigDecimal percentageCostal,
+			BigDecimal percentagePriceCostal, BigDecimal salePriceCostal) {
+		this.id = id;
+		this.brand = brand;
+		this.type = type;
+		this.kg = kg;
+		this.priceKg = priceKg;
+		this.priceCostal = priceCostal;
+		this.percentageKg = percentageKg;
+		this.percentagePriceKg = percentagePriceKg;
+		this.salePriceKg = salePriceKg;
+		this.percentageCostal = percentageCostal;
+		this.percentagePriceCostal = percentagePriceCostal;
+		this.salePriceCostal = salePriceCostal;
 	}
 	
-	public ProductModel(Long id, String marca, String tipo, BigDecimal inversion, BigDecimal precioKg,
-			BigDecimal precioCostal) {
-		this.id = id;
-		this.marca = marca;
-		this.tipo = tipo;
-		this.inversion = inversion;
-		this.precioKg = precioKg;
-		this.precioCostal = precioCostal;
-	}
-
 	public ProductModel() {
-	}	
+
+	}
 	
 }

@@ -9,21 +9,26 @@ public class ResponseModel<T> {
 	public boolean isSuccess() {
 		return success;
 	}
+	
 	public void setSuccess(boolean sucess) {
 		this.success = sucess;
 	}
+	
 	public String getMessage() {
 		return message;
 	}
+	
 	public void setMessage(String message) {
 		this.message = message;
 	}
 	public T getData() {
 		return data;
 	}
+	
 	public void setData(T data) {
 		this.data = data;
 	}
+	
 	public ResponseModel(boolean success, String message, T data) {
 		this.success = success;
 		this.message = message;
@@ -31,6 +36,7 @@ public class ResponseModel<T> {
 	}
 	
 	public ResponseModel() {
+		
 	}
 	
 }

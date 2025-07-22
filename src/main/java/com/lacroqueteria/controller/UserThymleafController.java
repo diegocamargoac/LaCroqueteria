@@ -28,13 +28,13 @@ public class UserThymleafController {
         return "navegador";
     }
     
-    // Plantillas de encargados
+    // Emplooys
     @GetMapping("/inicio")
     public String inicio() {
     	return "inicio";
     }
     
-    // Plantillas de administrador
+    // Admin
     @GetMapping("/inicioAdmin")
     public String inicioAdmin() {
     	return "inicioAdmin";
@@ -48,6 +48,16 @@ public class UserThymleafController {
     @GetMapping("/inventarioAdmin")
     public String inventarioAdmin() {
     	return "inventarioAdmin";
+    }
+    
+    @GetMapping("/inventario")
+    public String inventario() {
+    	return "inventario";
+    }
+    
+    @GetMapping("/resumen")
+    public String resumen() {
+    	return "resumen";
     }
     
     /*
