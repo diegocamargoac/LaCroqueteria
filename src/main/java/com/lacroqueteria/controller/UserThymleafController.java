@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.lacroqueteria.model.UserModel;
-import com.lacroqueteria.service.UserService;
+import com.lacroqueteria.serviceImpl.UserServiceImpl;
 
 @Controller
 public class UserThymleafController {
 	
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 	
     @GetMapping("/login")
     public String loginPage() {
