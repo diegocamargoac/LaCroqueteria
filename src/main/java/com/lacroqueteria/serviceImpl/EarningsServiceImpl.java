@@ -1,5 +1,6 @@
 package com.lacroqueteria.serviceImpl;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,6 @@ public class EarningsServiceImpl implements EarningsService {
 	@Override
 	public List<EarningsModel> getAllEarnings() {
 		return earningsRepository.findAll();
-
 	}
+
 }

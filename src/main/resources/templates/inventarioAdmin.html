@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario Admin</title>
 	<!-- Bootstrap CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 	<!-- DataTables CSS -->
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"> -->
 	<!-- jQuery -->
 	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 	<!-- DataTables JS -->
@@ -56,7 +57,10 @@
     .logo {
         width: 12rem;
         height: 12rem;
-        background-color: white;
+        background-image: url('/images/logo.png');
+	    background-size: cover;
+	    background-position: center;
+	    background-repeat: no-repeat;
         border-radius: 50%;
         margin-bottom: 20px;
     }
@@ -185,13 +189,28 @@
 		font-weight: bold;
 		width: 8rem;
 	}
+    .cancel-button-container {
+    	display: flex;
+    	justify-content: center;
+    }
+    .logout-btn {
+        display: inline-block;
+        text-align: center;
+        background-color: red;
+        border: 10rem;
+        margin: 2rem;
+        color: white;
+        text-decoration: none;
+        padding: 15px;
+        cursor: pointer;
+    }
 </style>
 <body>
 
     <aside class="sidebar" th:replace="navegador :: sidebar"></aside>
 
 	<div class="main-content">
-		<header th:fragment="header" class="header">Inventario Admin</header>
+		<header th:fragment="header" class="header">Panel Admin</header>
 		
 		<main class="main" th:fragment="contenido">		    
 	        <table id="productTable" border="1" class="table table-striped table-hover table-bordered">
@@ -279,6 +298,25 @@
     <!-- Fondo oscuro para bloquear contenido -->
     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
     
+    <script>
+		function logout() {
+		    fetch('/user/logout', { 
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        }
+		    })
+		    .then(res => {
+		        if (!res.ok) throw new Error("Error al cerrar sesión");
+		        return res.json();
+		    })
+		    .then(data => {
+		        console.log(data.message);
+		        window.location.href = '/login';
+		    })
+		    .catch(err => console.error(err));
+		}
+	</script>
     
     <script>
         function openPopup() {

@@ -115,6 +115,8 @@
     </div>
     
     <script>
+    	const BASE_URL = /*[[@{/}]]*/ '';
+    
         document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
@@ -126,7 +128,7 @@
                 password: password
             };
 
-            fetch('/user/login', {
+            fetch(BASE_URL + 'user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -136,7 +138,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.replace(window.location.origin + "/navegador");
+                    window.location.replace(window.location.origin + "/resumen");
                 } else {
                     alert(data.message);
                 }

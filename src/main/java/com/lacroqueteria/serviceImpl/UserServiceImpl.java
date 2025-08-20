@@ -17,7 +17,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	//private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Override
 	public UserModel findUserByName(String name) {

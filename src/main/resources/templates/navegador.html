@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,11 +48,18 @@
     .logo {
         width: 12rem;
         height: 12rem;
-        background-color: white;
+        background-image: url('/images/logo.png');
+	    background-size: cover;
+	    background-position: center;
+	    background-repeat: no-repeat;
         border-radius: 50%;
         margin-bottom: 20px;
     }
     .nav-links {
+    	display: flex;
+    	flex-direction: column;
+    	justify-content: center;
+    	align-items: center;
         list-style: none;
         font-size: 1.6rem;
         font-weight: bold;
@@ -85,6 +93,21 @@
         background-color: #D9D9D9;
         padding: 20px;
     }
+    .cancel-button-container {
+    	display: flex;
+    	justify-content: center;
+    }
+    .logout-btn {
+        display: inline-block;
+        text-align: center;
+        background-color: red;
+        border: 10rem;
+        margin: 2rem;
+        color: white;
+        text-decoration: none;
+        padding: 15px;
+        cursor: pointer;
+    }
 </style>
 <body>
     <aside class="sidebar" th:fragment="sidebar">
@@ -97,12 +120,15 @@
             -->
             <li><a th:href="@{/resumen}">Ventas</a></li>
             <li><a th:href="@{/inventario}">Inventario Tienda</a></li> <!-- Inventario para encargados de tienda -->
-            <li><a th:href="@{/inventarioAdmin}">Inventario Admin</a></li> <!-- Inventario para dueño -->
+            <li><a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/inventarioAdmin}">Panel Admin</a></li> <!-- Inventario para dueño -->
             <!--
             <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a th:href="@{/admin}">Admin</a></li>
             <li th:if="${#authorization.expression('hasRole(''CLIENTE'')')}"><a th:href="@{/cliente}">Cliente</a></li>
             <li><a th:href="@{/configuracion}">Configuración</a></li>
             -->
+            <li class="cancel-button-container">
+		        <button type="button" onclick="logout()" class="logout-btn">Cerrar sesión</button>
+		    </li>
         </ul>
         
     </aside>
@@ -110,8 +136,29 @@
 	<div class="main-content">
         <!-- <header class="header" th:replace="header :: header"></header> -->
 
-		<main class="content" th:replace="inicio :: contenido"></main>
+		<main class="content" th:replace="resumen :: contenido"></main>
 		
     </div>
+    
+    <script>
+		function logout() {
+		    fetch('/user/logout', { 
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        }
+		    })
+		    .then(res => {
+		        if (!res.ok) throw new Error("Error al cerrar sesión");
+		        return res.json();
+		    })
+		    .then(data => {
+		        console.log(data.message);
+		        window.location.href = '/login';
+		    })
+		    .catch(err => console.error(err));
+		}
+	</script>
+    
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.lacroqueteria.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.lacroqueteria.model.EarningsModel;
