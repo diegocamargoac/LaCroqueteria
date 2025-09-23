@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,6 +21,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lacroqueteria.config.CustomUserDetails;
 import com.lacroqueteria.config.JwtUtil;
 import com.lacroqueteria.model.EarningsModel;
 import com.lacroqueteria.model.ProductModel;
@@ -70,7 +74,7 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<ResponseModel<Map<String, Object>>> login(
 	        @RequestBody UserModel userModel,
-	        HttpServletResponse response) {  // <-- inyectamos HttpServletResponse para agregar la cookie
+	        HttpServletResponse response) {
 
 	    if (userModel == null || userModel.getName() == null || userModel.getPassword() == null ||
 	        userModel.getName().trim().isEmpty() || userModel.getPassword().trim().isEmpty()) {
@@ -79,35 +83,29 @@ public class UserController {
 	    }
 
 	    try {
-	        // Autenticación con Spring Security
 	        Authentication authentication = authenticationManager.authenticate(
 	            new UsernamePasswordAuthenticationToken(userModel.getName(), userModel.getPassword())
 	        );
 
-	        // Obtener detalles del usuario autenticado
 	        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-	        // Obtener roles como lista de strings
 	        List<String> roles = userDetails.getAuthorities().stream()
 	            .map(grantedAuthority -> grantedAuthority.getAuthority())
 	            .collect(Collectors.toList());
 
-	        // Generar token JWT
 	        String token = jwtUtil.generateToken(userModel.getName(), roles);
 
-	        // Crear cookie con el token JWT
 	        Cookie jwtCookie = new Cookie("jwt", token);
-	        jwtCookie.setHttpOnly(true);               // No accesible desde JS
-	        jwtCookie.setSecure(false);                 // Cambia a true en producción con HTTPS
-	        jwtCookie.setPath("/");                      // Cookie válida para toda la app
-	        jwtCookie.setMaxAge(24 * 60 * 60);          // Expira en 1 día
+	        jwtCookie.setHttpOnly(true);
+	        jwtCookie.setSecure(false);
+	        jwtCookie.setPath("/");
+	        jwtCookie.setMaxAge(24 * 60 * 60);
 	        response.addCookie(jwtCookie);
 
-	        // Buscar usuario para enviar info (puedes simplificar o crear un DTO)
 	        UserModel user = userService.findUserByName(userModel.getName());
 
 	        Map<String, Object> responseData = new HashMap<>();
-	        responseData.put("token", token); // Opcional, si quieres que también venga en el body
+	        responseData.put("token", token);
 	        responseData.put("user", user);
 
 	        return ResponseEntity.ok(new ResponseModel<>(true, "Bienvenido, " + user.getName(), responseData));
@@ -154,18 +152,16 @@ public class UserController {
 	// Come back to the session
 	@PostMapping("/logout")
 	public ResponseEntity<ResponseModel<String>> logout(HttpServletResponse response) {
-	    // Crear cookie con mismo nombre "jwt" y valor null, que expire inmediatamente
 	    Cookie cookie = new Cookie("jwt", null);
 	    cookie.setHttpOnly(true);
-	    cookie.setSecure(false);       // Cambia a true si usas HTTPS en producción
+	    cookie.setSecure(false);
 	    cookie.setPath("/");
-	    cookie.setMaxAge(0);           // Expira inmediatamente para borrar la cookie
+	    cookie.setMaxAge(0);
 	    
 	    response.addCookie(cookie);
 
 	    return ResponseEntity.ok(new ResponseModel<>(true, "Sesión cerrada correctamente", null));
 	}
-
 	
 	// Show all users
 	@GetMapping("/getAllUsers")
@@ -245,20 +241,22 @@ public class UserController {
 	
 	// New sale
 	@PostMapping("/addSale")
-	public ResponseEntity<ResponseModel<List<SalesModel>>> addSales(@RequestBody List<SalesModel> salesModel, Authentication auth) {
+	public ResponseEntity<ResponseModel<List<SalesModel>>> addSales(@RequestBody List<SalesModel> salesModel/*, Authentication auth*/, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		
 		try {
-			
+			/*
 			if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN) || r.getAuthority().equals(ROLE_EMPLOYEE))) {
 
 			}
-			
+			*/
 		    if (salesModel == null || salesModel.isEmpty()) {
 		        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 		                .body(new ResponseModel<>(false, "Debe proporcionar al menos una venta válida", null));
 		    }
 
 		    List<SalesModel> registredSales = new ArrayList<>();
-
+		    int numSale = salesService.getNextNumSale(LocalDate.now());
+		    
 		    for (SalesModel sale : salesModel) {
 		        if (sale.getProduct() == null || sale.getProduct().getId() == null) {
 		            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -268,17 +266,24 @@ public class UserController {
 		        SalesModel registredSale = null;
 
 		        if (sale.getKg() != null && sale.getPrice() == null) {
+		        	//sale.setNumSale(salesService.getNextNumSale(LocalDate.now()));
+		        	sale.setNumSale(numSale);
+		        	sale.setSeller(userDetails.getFullName());
 		        	registredSale = salesService.saleForKg(sale);
 		        } else if (sale.getPrice() != null && sale.getKg() == null) {
+		        	//sale.setNumSale(salesService.getNextNumSale(LocalDate.now()));
+		        	sale.setNumSale(numSale);
+		        	sale.setSeller(userDetails.getFullName());
 		        	registredSale = salesService.saleForPrice(sale);
 		        } else {
 		            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 		                    .body(new ResponseModel<>(false, "Cada venta debe proporcionar solo KG o solo Precio", null));
 		        }
-
+		        
 		        if (registredSale != null) {
 		        	registredSales.add(registredSale);
 		        }
+
 		    }
 
 		    if (!registredSales.isEmpty()) {

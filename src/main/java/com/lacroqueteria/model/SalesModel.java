@@ -29,7 +29,15 @@ public class SalesModel {
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = true)
 	private ProductModel product;
-
+	/*
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserModel userModel;
+*/
+	
+	private String seller; // vendedor
+	private Integer numSale; // numeroVenta
+	
 	public Long getId() {
 		return id;
 	}
@@ -94,8 +102,24 @@ public class SalesModel {
 		this.product = product;
 	}
 
+	public String getSeller() {
+		return seller;
+	}
+
+	public void setSeller(String seller) {
+		this.seller = seller;
+	}
+
+	public Integer getNumSale() {
+		return numSale;
+	}
+
+	public void setNumSale(Integer numSale) {
+		this.numSale = numSale;
+	}
+
 	public SalesModel(Long id, BigDecimal kg, BigDecimal price, BigDecimal totalSales, BigDecimal earnings,
-			LocalDate date, LocalTime hour, ProductModel product) {
+			LocalDate date, LocalTime hour, ProductModel product, String seller, Integer numSale) {
 		this.id = id;
 		this.kg = kg;
 		this.price = price;
@@ -104,6 +128,8 @@ public class SalesModel {
 		this.date = date;
 		this.hour = hour;
 		this.product = product;
+		this.seller = seller;
+		this.numSale = numSale;
 	}
 
 	public SalesModel() {
