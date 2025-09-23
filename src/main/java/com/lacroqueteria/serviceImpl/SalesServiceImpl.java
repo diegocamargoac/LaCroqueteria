@@ -65,7 +65,6 @@ public class SalesServiceImpl implements SalesService {
 	@Override
 	public SalesModel saleForPrice(SalesModel salesModel) {
 		
-		System.out.println("Precio: " + salesModel.getPrice());
 	    if (salesModel.getProduct() != null && salesModel.getProduct().getId() != null) {
 	        ProductModel productModel = productRepository.findById(salesModel.getProduct().getId()).orElse(null);
 
@@ -76,7 +75,7 @@ public class SalesServiceImpl implements SalesService {
 
 	            BigDecimal gananciasPorKg = salesModel.getKg().multiply(productModel.getPercentagePriceKg());
 	            salesModel.setEarnings(gananciasPorKg);
-
+	            
 	            salesModel.setDate(LocalDate.now());
 	            salesModel.setHour(LocalTime.now());
 
@@ -92,7 +91,7 @@ public class SalesServiceImpl implements SalesService {
 	    return null;
 	}
     
-    private void updateDailyEarnings(SalesModel sale) {
+	private void updateDailyEarnings(SalesModel sale) {
         LocalDate dateSale = sale.getDate();
         BigDecimal totalSale = sale.getTotalSales();
         BigDecimal EarningsSale = sale.getEarnings();
@@ -110,51 +109,10 @@ public class SalesServiceImpl implements SalesService {
         
     }
     
-    /*
-    // Método para venta basada en KG
-    public VentasModel ventaPorKg(VentasModel ventasModel) {
-        if (ventasModel.getProduct() != null && ventasModel.getProduct().getId() != null) {
-            ProductModel productModel = productRepository.findById(ventasModel.getProduct().getId()).orElse(null);
-
-            if (productModel != null && ventasModel.getKg() != null) {
-
-                BigDecimal ventaRegistradaKg = productModel.getPrecioVentaKg().multiply(ventasModel.getKg());
-                ventasModel.setPrecio(ventaRegistradaKg);
-                ventasModel.setTotalVenta(ventaRegistradaKg);
-
-                BigDecimal gananciasPorKg = ventasModel.getKg().multiply(productModel.getPrecioPorcentajeKg());
-                ventasModel.setGanancia(gananciasPorKg);
-
-                ventasModel.setFecha(LocalDate.now());
-                ventasModel.setHora(LocalTime.now());
-
-                return ventasRepository.save(ventasModel);
-            }
-        }
-        return null;
+	@Override
+    public int getNextNumSale(LocalDate fecha) {
+        Integer lastNum = salesRepository.findLastNumSale(fecha);
+        return lastNum + 1;
     }
 
-    // Método para venta basada en Precio
-    public VentasModel ventaPorPrecio(VentasModel ventasModel) {
-        if (ventasModel.getProduct() != null && ventasModel.getProduct().getId() != null) {
-            ProductModel productModel = productRepository.findById(ventasModel.getProduct().getId()).orElse(null);
-
-            if (productModel != null && ventasModel.getPrecio() != null) {
-
-                BigDecimal precioAKg = ventasModel.getPrecio().divide(productModel.getPrecioVentaKg(), 2, RoundingMode.HALF_UP);
-                ventasModel.setKg(precioAKg);
-                ventasModel.setTotalVenta(ventasModel.getPrecio());
-
-                BigDecimal gananciasPorKg = ventasModel.getKg().multiply(productModel.getPrecioPorcentajeKg());
-                ventasModel.setGanancia(gananciasPorKg);
-
-                ventasModel.setFecha(LocalDate.now());
-                ventasModel.setHora(LocalTime.now());
-
-                return ventasRepository.save(ventasModel);
-            }
-        }
-        return null;
-    }
-*/
 }

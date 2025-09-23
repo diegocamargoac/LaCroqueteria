@@ -218,10 +218,12 @@
 	        <table id="productTable" border="1" class="table table-striped table-hover table-bordered">
 		        <thead>
 		            <tr>
+		            	<th>Empleado(a)</th>
+		            	<th>Num Venta</th>
 		                <th>Marca</th>
 		                <th>Raza</th>
 		                <th>Kg</th>
-		                <th>Precio</th>
+		                <th>Total</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -275,23 +277,44 @@
 	            console.error('Error al obtener productos:', error);
 	        });
 	});
-
-	function populateTable(products) {
-	    const tableBody = document.querySelector('#productTable tbody');
-	    tableBody.innerHTML = '';
-
-	    products.forEach(product => {
-	        const row = document.createElement('tr');
-	        row.innerHTML = `
-	            <td>${product.product.brand}</td>
-	            <td>${product.product.type}</td>
-	            <td>${product.kg}</td>
-	            <td>${product.price}</td>
-	        `;
-	        tableBody.appendChild(row);
-	    });
-	}
-	</script>
 	
+    function populateTable(products) {
+        const tableBody = document.querySelector('#productTable tbody');
+        tableBody.innerHTML = '';
+
+        const grouped = {};
+        products.forEach(product => {
+            const num = product.numSale;
+            if (!grouped[num]) {
+                grouped[num] = {
+               		seller: product.seller,
+                    brands: [],
+                    types: [],
+                    kgs: [],
+                    totalPrice: 0
+                };
+            }
+            grouped[num].brands.push(product.product.brand);
+            grouped[num].types.push(product.product.type);
+            grouped[num].kgs.push(product.kg);
+            grouped[num].totalPrice += product.price || 0;
+        });
+
+        Object.keys(grouped).forEach(numSale => {
+            const sale = grouped[numSale];
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            	<td>${sale.seller}</td>
+                <td>${numSale}</td>
+                <td>${sale.brands.join(', ')}</td>
+                <td>${sale.types.join(', ')}</td>
+                <td>${sale.kgs.join(', ')}</td>
+                <td>${sale.totalPrice}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+	</script>
+
 </body>
 </html>

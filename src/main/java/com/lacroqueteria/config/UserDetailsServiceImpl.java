@@ -23,12 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
-
-        return User.builder()
-                .username(user.getName())
-                .password(user.getPassword())
-                .roles(user.getRole().getRole())
-                .build();
+        
+        return new CustomUserDetails(user);
     }
 	
 }
