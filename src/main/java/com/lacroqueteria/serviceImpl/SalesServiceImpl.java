@@ -91,7 +91,8 @@ public class SalesServiceImpl implements SalesService {
 	    return null;
 	}
     
-	private void updateDailyEarnings(SalesModel sale) {
+	@Override
+	public void updateDailyEarnings(SalesModel sale) {
         LocalDate dateSale = sale.getDate();
         BigDecimal totalSale = sale.getTotalSales();
         BigDecimal EarningsSale = sale.getEarnings();
@@ -114,5 +115,10 @@ public class SalesServiceImpl implements SalesService {
         Integer lastNum = salesRepository.findLastNumSale(fecha);
         return lastNum + 1;
     }
+	
+	@Override
+	public List<SalesModel> findBySeller(String seller) {
+		return salesRepository.findBySeller(seller);
+	}
 
 }

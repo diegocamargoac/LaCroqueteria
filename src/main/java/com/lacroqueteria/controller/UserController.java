@@ -116,39 +116,6 @@ public class UserController {
 	    }
 	}
 	
-	/*
-	// Login for any user
-	@PostMapping("/login")
-	public ResponseEntity<ResponseModel<UserModel>> login(@RequestBody UserModel userModel) {
-		
-	    if (userModel == null || userModel.getName() == null || userModel.getPassword() == null ||
-	        userModel.getName().trim().isEmpty() || userModel.getPassword().trim().isEmpty()) {
-	        return ResponseEntity.badRequest()
-	                .body(new ResponseModel<>(false, "Nombre de usuario y contraseña requeridos", null));
-	    }
-
-	    if (!userService.authenticate(userModel.getName(), userModel.getPassword())) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body(new ResponseModel<>(false, "Acceso denegado: credenciales incorrectas", null));
-	    }
-
-	    UserModel user = userService.findUserByName(userModel.getName());
-
-	    if (user == null) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                .body(new ResponseModel<>(false, "Usuario no encontrado", null));
-	    }
-
-	    UserModel userResponse = new UserModel();
-	    userResponse.setId(user.getId());
-	    userResponse.setName(user.getName());
-	    userResponse.setRole(user.getRole());
-
-	    ResponseModel<UserModel> response = new ResponseModel<>(true, "Bienvenido, " + user.getName(), userResponse);
-	    return ResponseEntity.ok(response);
-	}
-*/
-	
 	// Come back to the session
 	@PostMapping("/logout")
 	public ResponseEntity<ResponseModel<String>> logout(HttpServletResponse response) {
@@ -266,12 +233,10 @@ public class UserController {
 		        SalesModel registredSale = null;
 
 		        if (sale.getKg() != null && sale.getPrice() == null) {
-		        	//sale.setNumSale(salesService.getNextNumSale(LocalDate.now()));
 		        	sale.setNumSale(numSale);
 		        	sale.setSeller(userDetails.getFullName());
 		        	registredSale = salesService.saleForKg(sale);
 		        } else if (sale.getPrice() != null && sale.getKg() == null) {
-		        	//sale.setNumSale(salesService.getNextNumSale(LocalDate.now()));
 		        	sale.setNumSale(numSale);
 		        	sale.setSeller(userDetails.getFullName());
 		        	registredSale = salesService.saleForPrice(sale);
@@ -304,7 +269,7 @@ public class UserController {
 	public ResponseEntity<ResponseModel<List<SalesModel>>> getAllSales(Authentication auth) {
 		try {
 			
-			if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN) || r.getAuthority().equals(ROLE_EMPLOYEE))) {
+			if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN))) {
 			    List<SalesModel> sales = salesService.getAllVentas();
 
 			    LocalDate today = LocalDate.now();
@@ -319,7 +284,22 @@ public class UserController {
 			        ResponseModel<List<SalesModel>> response = new ResponseModel<>(false, "No hay ventas hoy", null);
 			        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			    }
-			}
+			} else if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_EMPLOYEE))) {
+			    List<SalesModel> sales = salesService.findBySeller(auth.getName());
+
+			    LocalDate today = LocalDate.now();
+			    List<SalesModel> salesToday = sales.stream()
+			        .filter(sale -> sale.getDate().equals(today))
+			        .collect(Collectors.toList());
+
+			    if (salesToday != null && !salesToday.isEmpty()) {
+			        ResponseModel<List<SalesModel>> response = new ResponseModel<>(true, "Ventas de hoy", salesToday);
+			        return ResponseEntity.ok(response);
+			    } else {
+			        ResponseModel<List<SalesModel>> response = new ResponseModel<>(false, "No hay ventas hoy", null);
+			        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			    }
+			} 
 			
 		} catch (Exception e) {
 			ResponseModel<List<SalesModel>> response = new ResponseModel<>(false, "Error al obtener ventas: " + e.getMessage(), null);
@@ -332,16 +312,20 @@ public class UserController {
 	
 	// Show all earnings separated for dates
 	@GetMapping("/getAllEarnings")
-	public ResponseEntity<ResponseModel<List<EarningsModel>>> getAllEarnings(Authentication auth, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	public ResponseEntity<ResponseModel<List<EarningsModel>>> getAllEarnings(Authentication auth,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 		try {
 
 			if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN))) {
-				
 				List<EarningsModel> earnings = earningsService.getAllEarnings();
-				earnings = earnings.stream()
-					    .filter(e -> !e.getDate().isBefore(startDate) && !e.getDate().isAfter(endDate))
-					    .collect(Collectors.toList());
+				
+				if (startDate != null && endDate != null) {
+					earnings = earnings.stream()
+						    .filter(e -> !e.getDate().isBefore(startDate) && !e.getDate().isAfter(endDate))
+						    .collect(Collectors.toList());
+				}
+				
 				if (earnings != null) {
 					ResponseModel<List<EarningsModel>> response = new ResponseModel<>(true, "Todas las ganancias", earnings);
 			        return ResponseEntity.ok(response);
@@ -358,5 +342,6 @@ public class UserController {
 		
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
+	
 
 }
