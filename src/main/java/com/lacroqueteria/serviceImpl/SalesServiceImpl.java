@@ -91,18 +91,19 @@ public class SalesServiceImpl implements SalesService {
 	    return null;
 	}
     
-	private void updateDailyEarnings(SalesModel sale) {
+	@Override
+	public void updateDailyEarnings(SalesModel sale) {
         LocalDate dateSale = sale.getDate();
         BigDecimal totalSale = sale.getTotalSales();
-        BigDecimal EarningsSale = sale.getEarnings();
+        BigDecimal totalEarnings = sale.getEarnings();
 
         EarningsModel dailyEarnings = earningsRepository.findByDate(dateSale);
 
         if (dailyEarnings != null) {
         	dailyEarnings.setTotalSales(dailyEarnings.getTotalSales().add(totalSale));
-        	dailyEarnings.setTotalEarnings(dailyEarnings.getTotalEarnings().add(EarningsSale));
+        	dailyEarnings.setTotalEarnings(dailyEarnings.getTotalEarnings().add(totalEarnings));
         } else {
-        	dailyEarnings = new EarningsModel(null, dateSale, EarningsSale, totalSale);
+        	dailyEarnings = new EarningsModel(null, dateSale, totalSale, totalEarnings);
         }
 
         earningsRepository.save(dailyEarnings);
@@ -114,5 +115,10 @@ public class SalesServiceImpl implements SalesService {
         Integer lastNum = salesRepository.findLastNumSale(fecha);
         return lastNum + 1;
     }
+	
+	@Override
+	public List<SalesModel> findBySeller(String seller) {
+		return salesRepository.findBySeller(seller);
+	}
 
 }

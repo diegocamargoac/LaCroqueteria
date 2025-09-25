@@ -235,9 +235,19 @@
 	   		</table>
 	   		<br>
 		    <div>
-		        <button class="button-popup" onclick="openPopup()">Añadir Producto</button>
+		        <button class="button-popup">Añadir Producto</button>
 		    </div>
 		    <br>
+		    <div>
+       			<label for="startDate">Fecha inicio:</label>
+		    	<input type="date" id="startDate" name="startDate" />
+		
+		    	<label for="endDate">Fecha fin:</label>
+		    	<input type="date" id="endDate" name="endDate" />
+		
+		    	<button id="filterBtn">Filtrar</button>
+		    </div>
+   	   		<br>
   	        <table id="salesTable" border="1" class="table table-striped table-hover table-bordered">
 		        <thead>
 		            <tr>
@@ -431,7 +441,7 @@
 	            if (data.success) {
 	                alert('Producto eliminado correctamente');
 	                window.location.reload();
-	                fetchProducts();
+	                //fetchProducts();
 	            } else {
 	                alert('Error al eliminar el producto: ' + data.message);
 	            }
@@ -440,30 +450,58 @@
 	    }
 	}
 
-	document.addEventListener('DOMContentLoaded', fetchProducts);
+	//document.addEventListener('DOMContentLoaded', fetchProducts);
 	</script>
 	
 	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-		    fetch('/user/getAllEarnings')
-		        .then(response => {
-		            if (!response.ok) {
-		                throw new Error(`Error HTTP: ${response.status}`);
-		            }
-		            return response.json();
-		        })
-		        .then(data => {
-		            if (data.success && data.data) {
-		                populateTableSales(data.data);
-		                $('#salesTable').DataTable();
-		            } else {
-		                alert("No hay ganancias disponibles.");
-		            }
-		        })
-		        .catch(error => {
-		            console.error('Error al obtener ganancias:', error);
-		        });
-		});
+	    document.addEventListener('DOMContentLoaded', () => {
+	        fetchEarnings();
+
+	        document.getElementById("filterBtn").addEventListener("click", fetchEarnings);
+	    });
+	
+	    function fetchEarnings() {
+	        const startDate = document.getElementById("startDate").value;
+	        const endDate = document.getElementById("endDate").value;
+
+	        let url = '/user/getAllEarnings';
+	        if (startDate && endDate) {
+	            url += `?startDate=${startDate}&endDate=${endDate}`;
+	        }
+
+	        fetch(url)
+	            .then(response => {
+	                if (!response.ok) {
+	                    throw new Error(`Error HTTP: ${response.status}`);
+	                }
+	                return response.json();
+	            })
+	            .then(data => {
+	                if (data.success && data.data) {
+	                	
+	                    if ($.fn.DataTable.isDataTable('#salesTable')) {
+	                        const table = $('#salesTable').DataTable();
+	                        table.clear();
+	                        table.rows.add(data.data);
+	                        table.draw();
+	                    } else {
+	                        $('#salesTable').DataTable({
+	                            data: data.data,
+	                            columns: [
+	                                { data: 'date' },
+	                                { data: 'totalSales' },
+	                                { data: 'totalEarnings' }
+	                            ]
+	                        });
+	                    }
+	                } else {
+	                    alert("No hay ganancias disponibles.");
+	                }
+	            })
+	            .catch(error => {
+	                console.error('Error al obtener ganancias:', error);
+	            });
+	    }
 		
 		function populateTableSales(products) {
 		    const tableBody = document.querySelector('#salesTable tbody');
