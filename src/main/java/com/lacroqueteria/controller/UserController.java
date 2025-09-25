@@ -320,7 +320,13 @@ public class UserController {
 			if (auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN))) {
 				List<EarningsModel> earnings = earningsService.getAllEarnings();
 				
-				if (startDate != null && endDate != null) {
+				if (startDate == null && endDate == null) {
+					LocalDate today = LocalDate.now();
+	                earnings = earnings.stream()
+	                        .filter(e -> e.getDate().isEqual(today))
+	                        .collect(Collectors.toList());
+	                
+				} else if (startDate != null && endDate != null) {
 					earnings = earnings.stream()
 						    .filter(e -> !e.getDate().isBefore(startDate) && !e.getDate().isAfter(endDate))
 						    .collect(Collectors.toList());
